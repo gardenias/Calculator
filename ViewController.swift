@@ -10,20 +10,9 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    
     @IBOutlet weak var display: UILabel!
 
     var userInputedANumber = false
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     @IBAction func digtal(sender: UIButton) {
         let digtal = sender.currentTitle
@@ -35,46 +24,28 @@ class ViewController: UIViewController {
         }
     }
     
+    var operandStack = [Double]()
+    
+    @IBAction func enter() {
+        userInputedANumber = false
+        operandStack.append(displayValue)
+    }
     
     var operatorStack = Array<NSString>()
     
     @IBAction func operate(sender: UIButton) {
-        
         enter()
-        
-        operatorStack.append(sender.currentTitle!)
-        println("operatorStack = \(operatorStack)")
-    }
-
-    var operandStack = Array<Double>()
-    
-    @IBAction func enter() {
-       userInputedANumber = false
-        operandStack.append(displayValue)
-       
-        if(operatorStack.count==1 &&  operandStack.count==2){
-            performCalculat()
-        }else if(operandStack.count == operatorStack.count + 1){
-            //do nothing
-        }else{
-            operandStack.removeAll(keepCapacity: true)
-            operatorStack.removeAll(keepCapacity: true)
-        }
-        
-        println("operandStack = \(operandStack)")
+        displayValue = performCalculat(sender.currentTitle!)
     }
     
-    
-    func performCalculat() -> Double{
-       let operatorS = operatorStack.removeLast()
-        switch operatorS {
+    func performCalculat(operate:NSString) -> Double{
+        switch operate {
             case "+": performOperation ({$0+$1})
-            case "-":performOperation ({$1-$0})
-            case "*":performOperation ({$0*$1})
-            case "/":performOperation ({$1/$0})
+            case "-": performOperation ({$1-$0})
+            case "*": performOperation ({$0*$1})
+            case "/": performOperation ({$1/$0})
             default : break
         }
-        println("perform calculat result \(displayValue)")
         return displayValue
     }
     
