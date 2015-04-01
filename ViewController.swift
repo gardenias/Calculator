@@ -11,47 +11,40 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
-
-    var userInputedANumber = false
     
+    var brain = CalculatorBrain()
+
+    var userIsInTheMiddleOfTypingANumber = false
+
     @IBAction func digtal(sender: UIButton) {
         let digtal = sender.currentTitle
-        if userInputedANumber {
+        if userIsInTheMiddleOfTypingANumber {
             display.text = display.text! + digtal!
         }else{
             display.text = digtal!
-            userInputedANumber = true
+            userIsInTheMiddleOfTypingANumber = true
         }
     }
-    
-    var operandStack = [Double]()
     
     @IBAction func enter() {
-        userInputedANumber = false
-        operandStack.append(displayValue)
+        userIsInTheMiddleOfTypingANumber = false
+        if let result = brain.pushOperand(displayValue){
+            displayValue = result
+        }else{
+            displayValue = 0
+        }
     }
-    
-    var operatorStack = Array<NSString>()
     
     @IBAction func operate(sender: UIButton) {
-        enter()
-        displayValue = performCalculat(sender.currentTitle!)
-    }
-    
-    func performCalculat(operate:NSString) -> Double{
-        switch operate {
-            case "+": performOperation ({$0+$1})
-            case "-": performOperation ({$1-$0})
-            case "*": performOperation ({$0*$1})
-            case "/": performOperation ({$1/$0})
-            default : break
+        if userIsInTheMiddleOfTypingANumber{
+            enter()
         }
-        return displayValue
-    }
-    
-    func performOperation(operation : (op1: Double,op2:Double) -> Double){
-        if(operandStack.count>=2){
-              displayValue  =  operation(op1: operandStack.removeLast(),op2: operandStack.removeLast())
+        if let operation = sender.currentTitle {
+            if let result = brain.perforOperation(operation){
+                displayValue = result
+            }else{
+                displayValue = 0
+            }
         }
     }
     
@@ -60,7 +53,7 @@ class ViewController: UIViewController {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
         }
         set{
-            userInputedANumber = false
+            userIsInTheMiddleOfTypingANumber = false
             display.text = "\(newValue)"
         }
     }
